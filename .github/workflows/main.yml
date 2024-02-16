@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   cache-and-install:
     runs-on: ubuntu-latest
-    environment: test
+    #environment: test
 
     steps:
       - name: Checkout
@@ -40,18 +40,18 @@ jobs:
 
   scan-main:
     runs-on: ubuntu-latest
-    environment: test
+    #environment: test
     permissions:
       id-token: write
       repository-projects: read
       pull-requests: read
       contents: read
       security-events: write
-    
-    # Scan push to main and post issues to Github Security
-    name: endorctl-scan
+      
     steps:
-    - uses: actions/checkout@v3
+    - name: Setting Env Variable
+      run: export ENDOR_PNPM_ENABLED=true
+    
     - name: 'Endor Labs Scan Push to main'
       if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
       uses: endorlabs/github-action@main
