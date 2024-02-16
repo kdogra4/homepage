@@ -5,6 +5,7 @@ on: workflow_dispatch
 jobs:
   cache-and-install:
     runs-on: ubuntu-latest
+    environment: test
 
     steps:
       - name: Checkout
@@ -39,6 +40,7 @@ jobs:
 
   scan-main:
     runs-on: ubuntu-latest
+    environment: test
     permissions:
       id-token: write
       repository-projects: read
