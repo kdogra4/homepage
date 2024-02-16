@@ -5,7 +5,12 @@ on: workflow_dispatch
 jobs:
   cache-and-install:
     runs-on: ubuntu-latest
-    #environment: test
+    permissions:
+      id-token: write
+      repository-projects: read
+      pull-requests: read
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout
@@ -38,36 +43,23 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install && pnpm build
-
-  scan-main:
-    runs-on: ubuntu-latest
-    #environment: test
-    permissions:
-      id-token: write
-      repository-projects: read
-      pull-requests: read
-      contents: read
-      security-events: write
+          
+      - name: Setting Env Variable
+        run: echo ENDOR_PNPM_ENABLED=true >> $GITHUB_ENV
       
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setting Env Variable
-      run: echo ENDOR_PNPM_ENABLED=true >> $GITHUB_ENV
-    
-    - name: 'Endor Labs Scan Push to main'
-      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-      uses: endorlabs/github-action@main
-      with:
-        namespace: 'kriti-learn' 
-        scan_dependencies: true
-        scan_secrets: true
-        pr: false
-        scan_summary_output_type: 'table'
-        sarif_file: 'findings.sarif'
-            
-    - name: Upload SARIF to github
-      if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'findings.sarif'    
-    
+      - name: 'Endor Labs Scan Push to main'
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        uses: endorlabs/github-action@main
+        with:
+          namespace: 'kriti-learn' 
+          scan_dependencies: true
+          scan_secrets: true
+          pr: false
+          scan_summary_output_type: 'table'
+          sarif_file: 'findings.sarif'
+              
+      - name: Upload SARIF to github
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'findings.sarif'  
