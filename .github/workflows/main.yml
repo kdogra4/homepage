@@ -36,7 +36,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          pnpm install && pnpm build
 
   scan-main:
     runs-on: ubuntu-latest
@@ -51,7 +52,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setting Env Variable
-      run: export ENDOR_PNPM_ENABLED=true
+      run: echo ENDOR_PNPM_ENABLED=true >> $GITHUB_ENV
     
     - name: 'Endor Labs Scan Push to main'
       if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
